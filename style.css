@@ -1,0 +1,76 @@
+:root{
+    --mint:#59e1c7;
+    --ink:#0d0d0d;
+    --ink-dim:#2a2a2a;
+    --bg:#f7f7f7;
+    --muted:#bdbdbd;
+    --accent:#e9fdf8;
+    --warn:#ffdd57;
+    --ok:#25d366;
+    --err:#ff5d5d;
+    --card:#ffffff;
+    --line:#e6e6e6;
+    --shadow: 0 1px 0 rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.06);
+    --w:450px; --radius:14px; --radius-lg:18px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+a{color:#0b66c3}
+.wrap{max-width:var(--w);margin:0 auto;padding:20px 16px 72px}
+
+/* header */
+.hero{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:16px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;border-radius:10px;background:url('assets/logo.png') no-repeat center/contain}
+.h1{font-weight:900;letter-spacing:.4px;font-size:28px}
+.sub{color:var(--ink-dim)}
+
+/* pills / ribbon */
+.ribbon{margin-top:12px;display:flex;gap:12px;flex-wrap:wrap}
+.pill{flex:1 1 140px;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--accent);color:#0f6f57;border:1px solid #d5f4ec}
+.k{font-size:12px;color:#7a7a7a}
+.v{font-weight:800}
+
+/* sections */
+.sec{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.sec h2{margin:0;padding:12px 14px;border-bottom:1px dashed var(--line);font-size:14px;letter-spacing:.2px;background:#fafafa;border-radius:var(--radius) var(--radius) 0 0}
+.sec .body{padding:12px 14px}
+.grid{display:grid;gap:10px}
+
+/* input */
+.field{display:flex;gap:8px}
+input[type=text]{flex:1;background:#f7f7f7;border:1px solid #d7d7d7;color:var(--ink);border-radius:12px;padding:12px 12px;outline:none}
+input::placeholder{color:#9a9a9a}
+button{cursor:pointer;background:#0d0d0d;color:#fff;border:1px solid #0d0d0d;border-radius:12px;padding:12px 14px;font-weight:800}
+button.ghost{background:#fff;color:var(--ink);border:1px solid var(--ink)}
+/* button card for balanced layout */
+.btn-card{display:flex;align-items:center;justify-content:center;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:0 12px;font-weight:800;box-shadow:none;min-height:56px}
+.btn-card:active{transform:translateY(1px)}
+.hint{color:#666;font-size:12px;margin-top:6px}
+
+/* checklist */
+.task{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.ico{min-width:22px;display:inline-grid;place-items:center;border:0;background:transparent;font-weight:900}
+.ok{background:var(--mint);border-color:var(--mint);color:#003b2d}
+.no{}
+.maybe{}
+
+.label{font-weight:800}
+.small{font-size:12px;color:#666}
+
+/* cards */
+.card{padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+.addr{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; word-break: break-all}
+
+/* list */
+.list {padding:0;}
+.list li{display:flex;justify-content:space-between;padding:10px;border-bottom:1px dashed var(--line)}
+.list li:last-child{border-bottom:0}
+
+.digipet-holder{color:#25D311}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#efefef;border:1px solid #e1e1e1;color:#333;font-size:12px;background:#25D311;color:white;}
+
+footer{opacity:.8;margin-top:18px;font-size:12px;color:#666}
+.sr{position:absolute; left:-9999px}
