@@ -242,8 +242,8 @@
     } else if (now > CONFIG.endDate) {
       phaseLabel = 'Ended';
     }
-    document.getElementById('phaseLabel').textContent = phaseLabel;
-    document.getElementById('countdown').textContent = (phaseLabel === 'Ended') ? '—' : humanCountdown(target);
+    qs('#phaseLabel').textContent = phaseLabel;
+    qs('#countdown').textContent = (phaseLabel === 'Ended') ? '—' : humanCountdown(target);
   }
   setInterval(tickCountdown, 1000);
   tickCountdown();
@@ -307,9 +307,9 @@
   function hydrateStats(rows){
     // Build Eligible list directly from Dune rows (no scoring)
     const eligRows = rows.filter(r => inferEligible(r));
-    document.getElementById('statEligible').textContent = fmt(eligRows.length);
+    qs('#statEligible').textContent = fmt(eligRows.length);
 
-    const ul = document.getElementById('leader');
+    const ul = qs('#leader');
     const items = eligRows.map((r,i)=>{
       const addr = (r.address || r.wallet || r.wallet_address || r.user || r.owner || '').toLowerCase();
       if (!addr) return '';
@@ -319,31 +319,31 @@
   }
 
   // ====== Address check flow (uses authoritative Dune row) ======
-  document.getElementById('btnCheck').addEventListener('click', onCheck);
-  document.getElementById('btnClear').addEventListener('click', onClear);
-  document.getElementById('addr').addEventListener('keydown', (e)=>{ if(e.key==='Enter') onCheck(); });
+  qs('#btnCheck').addEventListener('click', onCheck);
+  qs('#btnClear').addEventListener('click', onClear);
+  qs('#addr').addEventListener('keydown', (e)=>{ if(e.key==='Enter') onCheck(); });
 
   function onClear(){
-    const res = document.getElementById('checkResult');
-    document.getElementById('addr').value = '';
-    document.getElementById('outAddr').textContent = '—';
-    document.getElementById('eligState').textContent = '—';
-    document.getElementById('eligState').style.color = '';
-    document.getElementById('eligNote').textContent = '';
-    document.getElementById('digipetBadge').style.display = 'none';
-    const list = document.getElementById('questList');
+    const res = qs('#checkResult');
+    qs('#addr').value = '';
+    qs('#outAddr').textContent = '—';
+    qs('#eligState').textContent = '—';
+    qs('#eligState').style.color = '';
+    qs('#eligNote').textContent = '';
+    qs('#digipetBadge').style.display = 'none';
+    const list = qs('#questList');
     if (list) list.innerHTML = '';
     if (res) res.style.display = 'none';
   }
 
   async function onCheck(){
-    const addr = (document.getElementById('addr').value||'').trim().toLowerCase();
+    const addr = (qs('#addr').value||'').trim().toLowerCase();
     if (!/^0x[a-f0-9]{40}$/i.test(addr)){
       alert('Please paste a valid wallet address.');
       return;
     }
-    document.getElementById('outAddr').textContent = addr;
-    document.getElementById('checkResult').style.display = '';
+    qs('#outAddr').textContent = addr;
+    qs('#checkResult').style.display = '';
 
     let row = DUNE_ROWS.find(r => {
       const cand = (r.address || r.wallet || r.wallet_address || r.user || r.owner || '').toLowerCase();
@@ -379,16 +379,16 @@
   }
 
   function renderEligibility(eligible, prog, hasDigi){
-    const el = document.getElementById('eligState');
-    const note = document.getElementById('eligNote');
-    const badge = document.getElementById('digipetBadge');
+    const el = qs('#eligState');
+    const note = qs('#eligNote');
+    const badge = qs('#digipetBadge');
 
     el.style.color = eligible? 'var(--ok)' : 'var(--err)';
     el.textContent = eligible ? 'Eligible' : 'Not eligible yet';
     note.textContent = eligible ? 'You have completed all required quests within the activity window.' : 'Complete the remaining quests during the activity window to qualify.';
     badge.style.display = hasDigi ? 'inline-block' : 'none';
 
-    const list = document.getElementById('questList');
+    const list = qs('#questList');
     list.innerHTML = '';
     const mk = (ok, label, desc) => {
       const div = document.createElement('div');
@@ -423,13 +423,10 @@
   // Kickoff: load Dune rows for stats/eligible list right away + manual refresh
   loadDune().catch(err=>{
     console.error(err);
-    document.getElementById('statEligible').textContent = '—';
-    document.getElementById('leader').innerHTML = '<li><span>Unable to fetch Dune data</span><span class="small">try later</span></li>';
+    qs('#statEligible').textContent = '—';
+    qs('#leader').innerHTML = '<li><span>Unable to fetch Dune data</span><span class="small">try later</span></li>';
   });
-  const btnR = document.getElementById('refreshDune');
-  if (btnR) btnR.addEventListener('click', ()=>{
-    btnR.disabled = True if False else False
-  })
+  const btnR = qs('#refreshDune');
   if (btnR) btnR.addEventListener('click', ()=>{
     btnR.disabled = true; const old = btnR.textContent; btnR.textContent = 'Loading…';
     loadDune().finally(()=>{ btnR.disabled = false; btnR.textContent = old; });
