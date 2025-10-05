@@ -10,7 +10,9 @@ document.addEventListener("DOMContentLoaded", function () {
         // Dune API (read-only)
         // duneApiKey: process.env.DUNE_API_KEY,
         duneApiKey: 'hXp2DrMDRl7KvGnAOByKWZUs5RXWCJcm',
-        duneResultUrl: 'https://api.dune.com/api/v1/query/5914964/results?limit=1000',
+        duneResultUrl: 'https://api.dune.com',
+        duneOnlyEligibleQuery: 5914964, // pre‑filtered eligible list query
+        duneAllUsersQuery: 5915709, // all users query
 
         // Contracts
         thbtBase: '0xdC200537D99d8b4f0C89D59A68e29b67057d2c5F',
@@ -54,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Render static quest catalog (descriptions)
     const QUESTS = [
-        { id: 'mint100', icon: '', label: 'Mint THBT ≥ 100 THBT', desc: 'Swap fiat THB → THBT total at least 100 THBT within activity window.' },
+        { id: 'mint100', icon: '', label: 'Mint THBT ≥ 100 THBT', desc: 'THB → THBT total at least 100 THBT within activity window.' },
         { id: 'p2p1', icon: '', label: 'Transfer THBT to a friend ≥ 1 tx', desc: 'Peer‑to‑peer transfer, any amount.' },
         { id: 'swap_out10', icon: '', label: 'Swap THBT → USDT ≥ 10 THBT', desc: 'Cumulative swap volume out of THBT to USDT ≥ 10.' },
         { id: 'swap_in10', icon: '', label: 'Swap USDT → THBT ≥ 10 THBT', desc: 'Cumulative swap volume into THBT from USDT ≥ 10.' },
@@ -80,17 +82,26 @@ document.addEventListener("DOMContentLoaded", function () {
     renderQuestCatalog();
 
     // ====== Dune fetch & Eligible list ======
-    let DUNE_ROWS = [];
-    async function loadDune() {
-        const res = await fetch(CONFIG.duneResultUrl, { headers: { 'X-Dune-API-Key': CONFIG.duneApiKey } });
+
+    async function loadEligibleUsers() {
+        const rows = await fetchDune(CONFIG.duneOnlyEligibleQuery);
+        hydrateStats(rows);
+    }
+
+    let ELIGIBLE_USERS = [];
+    async function loadAllUsers() {
+        const rows = await fetchDune(CONFIG.duneAllUsersQuery);
+        ELIGIBLE_USERS = rows;
+        return rows;
+    }
+
+    async function fetchDune(queryId) {
+        const res = await fetch(`${CONFIG.duneResultUrl}/api/v1/query/${queryId}/results`, { headers: { 'X-Dune-API-Key': CONFIG.duneApiKey } });
         if (!res.ok) throw new Error('Dune HTTP ' + res.status);
         const js = await res.json();
         const rows = (js && js.result && js.result.rows) ? js.result.rows : [];
 
-        console.log('Dune rows', rows);
-
-        DUNE_ROWS = rows;
-        hydrateStats(rows);
+        return rows;
     }
 
     function truthy(v) {
@@ -100,21 +111,19 @@ document.addEventListener("DOMContentLoaded", function () {
         if (typeof v === 'string') return v.trim() !== '' && v !== '0' && v.toLowerCase() !== 'false';
         return !!v;
     }
- 
+
 
     function hydrateStats(rows) {
         // Build Eligible list directly from Dune rows (no scoring)
         const eligRows = rows;
 
-        console.log('Eligible rows', eligRows);
-        
         document.getElementById('statEligible').textContent = fmt(eligRows.length);
 
         const ul = document.getElementById('leader');
         const items = eligRows.map((r, i) => {
             const addr = r['Wallet'].toLowerCase();
             if (!addr) return '';
-            return `<li><span><span class="mono">${short(addr)}</span></span><span class="small digipet-holder">${r['Digipet NFT (pcs)']?'Digipet Holder':'✔'}</span></li>`;
+            return `<li><span><span class="mono">${short(addr)}</span></span><span class="small digipet-holder">${r['Digipet NFT (pcs)'] ? 'Digipet Holder' : '✔'}</span></li>`;
         }).filter(Boolean).join('');
         ul.innerHTML = items || '<li><span class="small">No eligible wallets yet</span><span></span></li>';
     }
@@ -146,14 +155,14 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('outAddr').textContent = addr;
         document.getElementById('checkResult').style.display = '';
 
-        let row = DUNE_ROWS.find(r => {
+        let row = ELIGIBLE_USERS.find(r => {
             const cand = r['Wallet'].toLowerCase();
             return cand === addr;
         });
 
         if (!row) {
-            try { await loadDune(); } catch (e) { console.warn(e); }
-            row = DUNE_ROWS.find(r => {
+            try { await loadAllUsers(); } catch (e) { console.warn(e); }
+            row = ELIGIBLE_USERS.find(r => {
                 const cand = r['Wallet'].toLowerCase();
                 return cand === addr;
             });
@@ -162,23 +171,21 @@ document.addEventListener("DOMContentLoaded", function () {
         let eligible = false;
         let prog = { mint100: false, p2p1: false, swap_out10: false, swap_in10: false, storefront1: false };
         if (row) {
-            eligible = true
             prog = {
-                mint100: truthy(row['Mint Amount (THBT)']),
-                p2p1: truthy(row['P2P (Tx)']),
-                swap_out10: truthy(row['To Pool (THBT)']),
-                swap_in10: truthy(row['From Pool (THBT)']),
-                storefront1: truthy(row['To Storefront (Tx)']),
-                hasDigipet: truthy(row['Digipet NFT (pcs)'])
+                mint100: truthy(row['Minted (THBT)']) && Number(row['Minted (THBT)']) >= 100,
+                p2p1: truthy(row['P2P (Tx)']) && Number(row['P2P (Tx)']) >= 1,
+                swap_out10: truthy(row['To Pool (THBT)']) && Number(row['To Pool (THBT)']) >= 10,
+                swap_in10: truthy(row['From Pool (THBT)']) && Number(row['From Pool (THBT)']) >= 10,
+                storefront1: truthy(row['To Storefront (Tx)']) && Number(row['To Storefront (Tx)']) >= 1,
+                hasDigipet: truthy(row['Digipet NFT (pcs)']) && Number(row['Digipet NFT (pcs)']) >= 1
             };
+            eligible = prog.mint100 && prog.p2p1 && prog.swap_out10 && prog.swap_in10 && prog.storefront1;
         }
 
-        // Optional DigiPet check
-        let hasDigi = prog.hasDigipet;
-        renderEligibility(eligible, prog, hasDigi);
+        renderEligibility(eligible, prog);
     }
 
-    function renderEligibility(eligible, prog, hasDigi) {
+    function renderEligibility(eligible, prog) {
         const el = document.getElementById('eligState');
         const note = document.getElementById('eligNote');
         const badge = document.getElementById('digipetBadge');
@@ -186,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
         el.style.color = eligible ? 'var(--ok)' : 'var(--err)';
         el.textContent = eligible ? 'Eligible' : 'Not eligible yet';
         note.textContent = eligible ? 'You have completed all required quests within the activity window.' : 'Complete the remaining quests during the activity window to qualify.';
-        badge.style.display = hasDigi ? 'inline-block' : 'none';
+        badge.style.display = prog.hasDigipet ? 'inline-block' : 'none';
 
         const list = document.getElementById('questList');
         list.innerHTML = '';
@@ -201,7 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // Kickoff: load Dune rows for stats/eligible list right away + manual refresh
-    loadDune().catch(err => {
+    loadEligibleUsers().catch(err => {
         console.error(err);
         document.getElementById('statEligible').textContent = '—';
         document.getElementById('leader').innerHTML = '<li><span>Unable to fetch Dune data</span><span class="small">try later</span></li>';
@@ -209,6 +216,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnR = document.getElementById('refreshDune');
     if (btnR) btnR.addEventListener('click', () => {
         btnR.disabled = true; const old = btnR.textContent; btnR.textContent = 'Loading…';
-        loadDune().finally(() => { btnR.disabled = false; btnR.textContent = old; });
+        loadEligibleUsers().finally(() => { btnR.disabled = false; btnR.textContent = old; });
     });
 });
