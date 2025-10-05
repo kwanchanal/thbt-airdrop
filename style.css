@@ -53,8 +53,6 @@ button.ghost{background:#fff;color:var(--ink);border:1px solid var(--ink)}
 .task{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}
 .ico{min-width:22px;display:inline-grid;place-items:center;border:0;background:transparent;font-weight:900}
 .ok{background:var(--mint);border-color:var(--mint);color:#003b2d}
-.no{}
-.maybe{}
 
 .label{font-weight:800}
 .small{font-size:12px;color:#666}
