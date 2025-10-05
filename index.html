@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>THBT Airdrop – Eligibility & Rewards</title>
+  <meta name="description" content="Check your eligibility for the THBT Airdrop and see live stats." />
+  <style>
+    :root{
+      --mint:#59e1c7;
+      --ink:#0d0d0d;
+      --ink-dim:#2a2a2a;
+      --bg:#f7f7f7;
+      --muted:#bdbdbd;
+      --accent:#e9fdf8;
+      --warn:#ffdd57;
+      --ok:#25d366;
+      --err:#ff5d5d;
+      --card:#ffffff;
+      --line:#e6e6e6;
+      --shadow: 0 1px 0 rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.06);
+      --w:450px; --radius:14px; --radius-lg:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    a{color:#0b66c3}
+    .wrap{max-width:var(--w);margin:0 auto;padding:20px 16px 72px}
+
+    /* header */
+    .hero{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:16px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:36px;height:36px;border-radius:10px;background:conic-gradient(from 0deg,#59e1c7,#e9fdf8,#59e1c7);box-shadow:inset 0 0 0 2px #e5e5e5}
+    .h1{font-weight:900;letter-spacing:.4px;font-size:28px}
+    .sub{color:var(--ink-dim)}
+
+    /* pills / ribbon */
+    .ribbon{margin-top:12px;display:flex;gap:12px;flex-wrap:wrap}
+    .pill{flex:1 1 140px;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--accent);color:#0f6f57;border:1px solid #d5f4ec}
+    .k{font-size:12px;color:#7a7a7a}
+    .v{font-weight:800}
+
+    /* sections */
+    .sec{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .sec h2{margin:0;padding:12px 14px;border-bottom:1px dashed var(--line);font-size:14px;letter-spacing:.2px;background:#fafafa;border-radius:var(--radius) var(--radius) 0 0}
+    .sec .body{padding:12px 14px}
+    .grid{display:grid;gap:10px}
+
+    /* input */
+    .field{display:flex;gap:8px}
+    input[type=text]{flex:1;background:#f7f7f7;border:1px solid #d7d7d7;color:var(--ink);border-radius:12px;padding:12px 12px;outline:none}
+    input::placeholder{color:#9a9a9a}
+    button{cursor:pointer;background:#0d0d0d;color:#fff;border:1px solid #0d0d0d;border-radius:12px;padding:12px 14px;font-weight:800}
+    button.ghost{background:#fff;color:var(--ink);border:1px solid var(--ink)}
+    /* button card for balanced layout */
+    .btn-card{display:flex;align-items:center;justify-content:center;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:0 12px;font-weight:800;box-shadow:none;min-height:56px}
+    .btn-card:active{transform:translateY(1px)}
+    .hint{color:#666;font-size:12px;margin-top:6px}
+
+    /* checklist */
+    .task{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+    .ico{min-width:22px;display:inline-grid;place-items:center;border:0;background:transparent;font-weight:900}
+    .ok{background:var(--mint);border-color:var(--mint);color:#003b2d}
+    .no{}
+    .maybe{}
+
+    .label{font-weight:800}
+    .small{font-size:12px;color:#666}
+
+    /* cards */
+    .card{padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+    .addr{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; word-break: break-all}
+
+    /* list */
+    .list li{display:flex;justify-content:space-between;padding:10px;border-bottom:1px dashed var(--line)}
+    .list li:last-child{border-bottom:0}
+
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#efefef;border:1px solid #e1e1e1;color:#333;font-size:12px}
+
+    footer{opacity:.8;margin-top:18px;font-size:12px;color:#666}
+    .sr{position:absolute; left:-9999px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div class="h1">THBT Airdrop</div>
+          <div class="sub">Complete the on‑chain quests. Get rewarded.</div>
+        </div>
+      </div>
+
+      <div class="ribbon" id="ribbon">
+        <div class="pill">
+          <div>
+            <div class="k">Activity Window</div>
+            <div class="v" id="activityRange">1 Jul – 30 Oct 2025</div>
+          </div>
+        </div>
+        <div class="pill">
+          <div>
+            <div class="k" id="phaseLabel">Ends In</div>
+            <div class="v" id="countdown">—</div>
+          </div>
+        </div>
+        <div class="pill">
+          <div>
+            <div class="k">Reward Drop</div>
+            <div class="v">1 Nov 2025 • 00:00 (ICT)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Check Eligibility -->
+    <section class="sec" id="sec-check">
+      <h2>Check eligibility</h2>
+      <div class="body grid">
+        <div class="field">
+          <input id="addr" type="text" placeholder="Paste your wallet (0x…)" autocomplete="off" spellcheck="false" />
+          <button id="btnCheck">Check</button>
+          <button id="btnClear" class="ghost" title="Clear & reset">Clear</button>
+        </div>
+        <div class="hint">Paste your wallet address to check eligibility. Bonus : Digipet NFT holder got extra reward ✨</div>
+        <div id="checkResult" class="grid" style="display:none">
+          <div class="card">
+            <div class="small">Address</div>
+            <div class="addr" id="outAddr">—</div>
+          </div>
+          <div class="card" id="eligCard">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+              <div>
+                <div class="small">Eligibility</div>
+                <div id="eligState" class="label">—</div>
+              </div>
+              <div id="digipetBadge" class="badge" title="Holds DigiPet NFT on BSC" style="display:none">DigiPet holder</div>
+            </div>
+            <div class="small" id="eligNote"></div>
+          </div>
+          <div class="grid" id="questList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quests definition -->
+    <section class="sec">
+      <h2>Quests</h2>
+      <div class="body grid" id="questCatalog">
+        <!-- Populated by JS (static + dynamic when address is checked) -->
+      </div>
+    </section>
+
+    <!-- Rewards info -->
+    <section class="sec">
+      <h2>Reward</h2>
+      <div class="body grid">
+        <div class="card">
+          <div class="label">🚩 1000 THBT</div>
+          <div class="small">Airdropped to all eligible wallets on <b>1 Nov 2025 • 00:00 (ICT)</b></div>
+        </div>
+        <div class="card">
+          <div class="label">🚩  2000 THBT for DigiPet NFT Holders</div>
+          <div class="small">Bonus airdrop for wallets that <b>hold DigiPet NFT on BSC</b> and <b>complete all quests</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live stats -->
+    <section class="sec">
+      <h2>Live stats</h2>
+      <div class="body grid">
+        <div class="grid" style="grid-template-columns:1fr 140px;gap:10px">
+          <div class="card">
+            <div class="small">Eligible wallets</div>
+            <div class="label" id="statEligible">—</div>
+          </div>
+          <button id="refreshDune" class="btn-card">🔄 Refresh</button>
+        </div>
+        <div class="card">
+          <div class="small">Eligible list</div>
+          <ul class="list" id="leader"></ul>
+        </div>
+        <div class="hint">Source: Dune Query <span class="mono">5914964</span>. Updates when you open/refresh.</div>
+      </div>
+    </section>
+
+    <footer>
+      Contract (Base): <a href="https://basescan.org/token/0xdC200537D99d8b4f0C89D59A68e29b67057d2c5F" target="_blank" rel="noopener">0xdC2005…2c5F</a> · DigiPet NFT (BSC): <a href="https://bscscan.com/token/0xbdede6f507931638daca8db8c61422aff7566190" target="_blank" rel="noopener">0xbdede6…66190</a>
+    </footer>
+  </div>
+
+<script>
+(() => {
+  // ====== CONFIG (edit safely) ======
+  const CONFIG = {
+    // Activity window (ICT). You can override for testing via URL: ?start=2025-07-01&end=2025-10-30
+    startDate: new Date('2025-07-01T00:00:00+07:00'),
+    endDate:   new Date('2025-10-30T23:59:59+07:00'),
+    rewardDate: new Date('2025-11-01T00:00:00+07:00'),
+
+    // Dune API (read-only)
+    duneApiKey: 'hXp2DrMDRl7KvGnAOByKWZUs5RXWCJcm',
+    duneResultUrl: 'https://api.dune.com/api/v1/query/5914964/results?limit=1000',
+
+    // Scanners API keys (optional/fallback)
+    etherscanKey: '817NYJHNCWACX1FF82N6K7T5PDRZ9CDDD9', // used on basescan.org family endpoints too
+
+    // Contracts
+    thbtBase: '0xdC200537D99d8b4f0C89D59A68e29b67057d2c5F',
+    digipetBsc721: '0xbdede6f507931638daca8db8c61422aff7566190'
+  };
+
+  // URL param overrides for testing dates
+  const usp = new URLSearchParams(location.search);
+  if (usp.get('start')) CONFIG.startDate = new Date(usp.get('start') + 'T00:00:00+07:00');
+  if (usp.get('end'))   CONFIG.endDate   = new Date(usp.get('end')   + 'T23:59:59+07:00');
+
+  // ====== UTIL ======
+  const qs = (s, el = document) => el.querySelector(s);
+  const fmt = n => n.toLocaleString('en-US');
+  const short = a => a ? a.slice(0,6) + '…' + a.slice(-4) : '';
+
+  function humanCountdown(target){
+    const now = new Date();
+    let s = Math.max(0, Math.floor((target - now)/1000));
+    const d = Math.floor(s/86400); s%=86400;
+    const h = Math.floor(s/3600); s%=3600;
+    const m = Math.floor(s/60); s%=60;
+    return `${d}d ${h}h ${m}m ${s}s`;
+  }
+
+  function tickCountdown(){
+    const now = new Date();
+    let phaseLabel = 'Starts In';
+    let target = CONFIG.startDate;
+    if (now >= CONFIG.startDate && now <= CONFIG.endDate){
+      phaseLabel = 'Ends In';
+      target = CONFIG.endDate;
+    } else if (now > CONFIG.endDate) {
+      phaseLabel = 'Ended';
+    }
+    document.getElementById('phaseLabel').textContent = phaseLabel;
+    document.getElementById('countdown').textContent = (phaseLabel === 'Ended') ? '—' : humanCountdown(target);
+  }
+  setInterval(tickCountdown, 1000);
+  tickCountdown();
+
+  // Render static quest catalog (descriptions)
+  const QUESTS = [
+    {id:'mint100', label:'Mint THBT ≥ 100 THBT', desc:'Swap fiat THB → THBT total at least 100 THBT within activity window.'},
+    {id:'p2p1', label:'Transfer THBT to a friend ≥ 1 tx', desc:'Peer‑to‑peer transfer, any amount.'},
+    {id:'swap_out10', label:'Swap THBT → USDT ≥ 10 THBT', desc:'Cumulative swap volume out of THBT to USDT ≥ 10.'},
+    {id:'swap_in10', label:'Swap USDT → THBT ≥ 10 THBT', desc:'Cumulative swap volume into THBT from USDT ≥ 10.'},
+    {id:'storefront1', label:'Purchase coupon ≥ 1 tx', desc:'At least one storefront purchase.'}
+  ];
+
+  function renderQuestCatalog(){
+    const cont = qs('#questCatalog');
+    cont.innerHTML = '';
+    for (const q of QUESTS){
+      const el = document.createElement('div');
+      el.className = 'task';
+      el.innerHTML = `
+        <div class="ico">⭐️</div>
+        <div>
+          <div class="label">${q.label}</div>
+          <div class="small">${q.desc}</div>
+        </div>`;
+      cont.appendChild(el);
+    }
+  }
+  renderQuestCatalog();
+
+  // ====== Dune fetch & Eligible list ======
+  let DUNE_ROWS = [];
+  async function loadDune(){
+    const res = await fetch(CONFIG.duneResultUrl, { headers: { 'X-Dune-API-Key': CONFIG.duneApiKey }});
+    if (!res.ok) throw new Error('Dune HTTP '+res.status);
+    const js = await res.json();
+    const rows = (js && js.result && js.result.rows) ? js.result.rows : [];
+    DUNE_ROWS = rows;
+    hydrateStats(rows);
+  }
+
+  function truthy(v){
+    if (v === undefined || v === null) return false;
+    if (typeof v === 'boolean') return v;
+    if (typeof v === 'number') return v > 0;
+    if (typeof v === 'string') return v.trim() !== '' && v !== '0' && v.toLowerCase() !== 'false';
+    return !!v;
+  }
+  function inferEligible(r){
+    if (truthy(r.eligible)) return true;
+    const ok = [
+      truthy(r.mint100 || r.mint_100 || r.mint_thbt_100),
+      truthy(r.p2p1 || r.p2p || r.transfer_1 || r.transfer_thbt_1),
+      truthy(r.swap_out10 || r.swap_thbt_usdt_10 || r.swap_thbt_to_usdt_10),
+      truthy(r.swap_in10 || r.swap_usdt_thbt_10 || r.swap_usdt_to_thbt_10),
+      truthy(r.storefront1 || r.storefront || r.buy_coupon_1)
+    ];
+    return ok.every(Boolean);
+  }
+
+  function hydrateStats(rows){
+    // Build Eligible list directly from Dune rows (no scoring)
+    const eligRows = rows.filter(r => inferEligible(r));
+    document.getElementById('statEligible').textContent = fmt(eligRows.length);
+
+    const ul = document.getElementById('leader');
+    const items = eligRows.map((r,i)=>{
+      const addr = (r.address || r.wallet || r.wallet_address || r.user || r.owner || '').toLowerCase();
+      if (!addr) return '';
+      return `<li><span>${i+1}. <span class="mono">${short(addr)}</span></span><span class="small">✔</span></li>`;
+    }).filter(Boolean).join('');
+    ul.innerHTML = items || '<li><span class="small">No eligible wallets yet</span><span></span></li>';
+  }
+
+  // ====== Address check flow (uses authoritative Dune row) ======
+  document.getElementById('btnCheck').addEventListener('click', onCheck);
+  document.getElementById('btnClear').addEventListener('click', onClear);
+  document.getElementById('addr').addEventListener('keydown', (e)=>{ if(e.key==='Enter') onCheck(); });
+
+  function onClear(){
+    const res = document.getElementById('checkResult');
+    document.getElementById('addr').value = '';
+    document.getElementById('outAddr').textContent = '—';
+    document.getElementById('eligState').textContent = '—';
+    document.getElementById('eligState').style.color = '';
+    document.getElementById('eligNote').textContent = '';
+    document.getElementById('digipetBadge').style.display = 'none';
+    const list = document.getElementById('questList');
+    if (list) list.innerHTML = '';
+    if (res) res.style.display = 'none';
+  }
+
+  async function onCheck(){
+    const addr = (document.getElementById('addr').value||'').trim().toLowerCase();
+    if (!/^0x[a-f0-9]{40}$/i.test(addr)){
+      alert('Please paste a valid wallet address.');
+      return;
+    }
+    document.getElementById('outAddr').textContent = addr;
+    document.getElementById('checkResult').style.display = '';
+
+    let row = DUNE_ROWS.find(r => {
+      const cand = (r.address || r.wallet || r.wallet_address || r.user || r.owner || '').toLowerCase();
+      return cand === addr;
+    });
+
+    if (!row){
+      try{ await loadDune(); }catch(e){ console.warn(e); }
+      row = DUNE_ROWS.find(r => {
+        const cand = (r.address || r.wallet || r.wallet_address || r.user || r.owner || '').toLowerCase();
+        return cand === addr;
+      });
+    }
+
+    let eligible = false;
+    let prog = { mint100:false, p2p1:false, swap_out10:false, swap_in10:false, storefront1:false };
+    if (row){
+      eligible = inferEligible(row);
+      prog = {
+        mint100: truthy(row.mint100 || row.mint_100 || row.mint_thbt_100),
+        p2p1: truthy(row.p2p1 || row.p2p || row.transfer_1 || row.transfer_thbt_1),
+        swap_out10: truthy(row.swap_out10 || row.swap_thbt_usdt_10 || row.swap_thbt_to_usdt_10),
+        swap_in10: truthy(row.swap_in10 || row.swap_usdt_thbt_10 || row.swap_usdt_to_thbt_10),
+        storefront1: truthy(row.storefront1 || row.storefront || row.buy_coupon_1)
+      };
+    }
+
+    // Optional DigiPet check
+    let hasDigi = false;
+    try { hasDigi = await checkDigipetBSC(addr); } catch(err){ console.warn('DigiPet check failed', err); }
+
+    renderEligibility(eligible, prog, hasDigi);
+  }
+
+  function renderEligibility(eligible, prog, hasDigi){
+    const el = document.getElementById('eligState');
+    const note = document.getElementById('eligNote');
+    const badge = document.getElementById('digipetBadge');
+
+    el.style.color = eligible? 'var(--ok)' : 'var(--err)';
+    el.textContent = eligible ? 'Eligible' : 'Not eligible yet';
+    note.textContent = eligible ? 'You have completed all required quests within the activity window.' : 'Complete the remaining quests during the activity window to qualify.';
+    badge.style.display = hasDigi ? 'inline-block' : 'none';
+
+    const list = document.getElementById('questList');
+    list.innerHTML = '';
+    const mk = (ok, label, desc) => {
+      const div = document.createElement('div');
+      div.className = 'task';
+      div.innerHTML = `<div class="ico">${ok?'⭐️':'⛔️'}</div><div><div class="label">${label}</div><div class="small">${desc}</div></div>`;
+      return div;
+    };
+    QUESTS.forEach(d=> list.appendChild(mk(!!prog[d.id], d.label, d.desc)));
+  }
+
+  // ====== DigiPet NFT holder check (BSC) ======
+  async function checkDigipetBSC(address){
+    const url = new URL('https://api.bscscan.com/api');
+    url.search = new URLSearchParams({
+      module:'account', action:'tokennfttx', contractaddress: CONFIG.digipetBsc721, address, page:1, offset:100, sort:'asc', apikey: CONFIG.etherscanKey
+    }).toString();
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('bscscan http '+res.status);
+    const js = await res.json();
+    if (js.status !== '1') return false;
+    const txs = js.result || [];
+    let bal = 0;
+    for (const t of txs){
+      const from = (t.from || t.from_address || '').toLowerCase();
+      const to = (t.to || t.to_address || '').toLowerCase();
+      if (to === address.toLowerCase()) bal += 1;
+      if (from === address.toLowerCase()) bal -= 1;
+    }
+    return bal > 0;
+  }
+
+  // Kickoff: load Dune rows for stats/eligible list right away + manual refresh
+  loadDune().catch(err=>{
+    console.error(err);
+    document.getElementById('statEligible').textContent = '—';
+    document.getElementById('leader').innerHTML = '<li><span>Unable to fetch Dune data</span><span class="small">try later</span></li>';
+  });
+  const btnR = document.getElementById('refreshDune');
+  if (btnR) btnR.addEventListener('click', ()=>{
+    btnR.disabled = True if False else False
+  })
+  if (btnR) btnR.addEventListener('click', ()=>{
+    btnR.disabled = true; const old = btnR.textContent; btnR.textContent = 'Loading…';
+    loadDune().finally(()=>{ btnR.disabled = false; btnR.textContent = old; });
+  });
+})();
+</script>
+</body>
+</html>
