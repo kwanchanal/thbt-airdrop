@@ -171,8 +171,9 @@ document.addEventListener("DOMContentLoaded", function () {
         let eligible = false;
         let prog = { mint100: false, p2p1: false, swap_out10: false, swap_in10: false, storefront1: false };
         if (row) {
+            console.log('Found row', row);
             prog = {
-                mint100: truthy(row['Minted (THBT)']) && Number(row['Minted (THBT)']) >= 100,
+                mint100: truthy(row['Mint Amount (THBT)']) && Number(row['Mint Amount (THBT)']) >= 100,
                 p2p1: truthy(row['P2P (Tx)']) && Number(row['P2P (Tx)']) >= 1,
                 swap_out10: truthy(row['To Pool (THBT)']) && Number(row['To Pool (THBT)']) >= 10,
                 swap_in10: truthy(row['From Pool (THBT)']) && Number(row['From Pool (THBT)']) >= 10,
