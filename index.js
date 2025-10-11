@@ -9,10 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Dune API (read-only)
         // duneApiKey: process.env.DUNE_API_KEY,
-        duneApiKey: 'hXp2DrMDRl7KvGnAOByKWZUs5RXWCJcm',
+        duneApiKey: 'HvPnsBKDN6OtNlbxPMlhXpnRX1oN7itx',
         duneResultUrl: 'https://api.dune.com',
         duneOnlyEligibleQuery: 5914964, // pre‑filtered eligible list query
-        duneAllUsersQuery: 5915709, // all users query
+        duneAllUsersQuery: 5944833, // all users query
 
         // Contracts
         thbtBase: '0xdC200537D99d8b4f0C89D59A68e29b67057d2c5F',
@@ -56,11 +56,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Render static quest catalog (descriptions)
     const QUESTS = [
-        { id: 'mint100', icon: '', label: 'Mint THBT ≥ 100 THBT', desc: 'THB → THBT total at least 100 THBT within activity window.' },
+        { id: 'mint100', icon: '', label: 'Mint THBT ≥ 250 THBT', desc: 'THB → THBT total at least 250 THBT within activity window.' },
         { id: 'p2p1', icon: '', label: 'Transfer THBT to a friend ≥ 1 tx', desc: 'Peer‑to‑peer transfer, any amount.' },
-        { id: 'swap_out10', icon: '', label: 'Swap THBT → USDT ≥ 10 THBT', desc: 'Cumulative swap volume out of THBT to USDT ≥ 10.' },
-        { id: 'swap_in10', icon: '', label: 'Swap USDT → THBT ≥ 10 THBT', desc: 'Cumulative swap volume into THBT from USDT ≥ 10.' },
-        { id: 'storefront1', icon: '', label: 'Purchase coupon ≥ 1 tx', desc: 'At least one storefront purchase.' },
+        { id: 'swap_out10', icon: '', label: 'Swap THBT → USDT ≥ 50 THBT', desc: 'Cumulative swap volume out of THBT to USDT ≥ 50.' },
+        { id: 'swap_in10', icon: '', label: 'Swap USDT → THBT ≥ 50 THBT', desc: 'Cumulative swap volume into THBT from USDT ≥ 50.' },
     ];
 
     function renderQuestCatalog() {
@@ -81,8 +80,30 @@ document.addEventListener("DOMContentLoaded", function () {
     renderQuestCatalog();
 
         // Render static quest catalog (descriptions)
+    const DIGIPET_QUESTS = [
+        { id: 'hasDigipet', icon: '🐶', label: 'Hold Digipet NFT', desc: 'Special for Digipet NFT holder' }
+    ];
+
+    function renderDigipetQuestCatalog() {
+        const cont = qs('#digipetQuestCatalog');
+        cont.innerHTML = '';
+        for (const q of DIGIPET_QUESTS) {
+            const el = document.createElement('div');
+            el.className = 'task';
+            el.innerHTML = `
+        <div class="ico">${q.icon ? q.icon : '⭐️'}</div>
+        <div>
+          <div class="label">${q.label}</div>
+          <div class="small">${q.desc}</div>
+        </div>`;
+            cont.appendChild(el);
+        }
+    }
+    renderDigipetQuestCatalog();
+
+            // Render static quest catalog (descriptions)
     const EXTRA_QUESTS = [
-        { id: 'hasDigipet', icon: '🐶', label: 'Digipet NFT holder', desc: 'Special for Digipet NFT holder' }
+        { id: 'storefront1', icon: '🎫', label: 'Purchase coupon ≥ 1 tx', desc: 'At least one storefront purchase.' }
     ];
 
     function renderExtraQuestCatalog() {
@@ -167,6 +188,14 @@ document.addEventListener("DOMContentLoaded", function () {
         if (res) res.style.display = 'none';
     }
 
+
+    const REWARDS = [
+        { id: 'basic', icon: '🎉', label: 'Basic Airdrop', desc: 'Proportional share of 100,000 USDT worth of THBT tokens' },
+        { id: 'shopper', icon: '🎉', label: 'Basic Airdrop', desc: 'Proportional share of 100,000 USDT worth of THBT tokens' },
+        { id: 'digipet', icon: '🎉', label: 'Basic Airdrop', desc: 'Proportional share of 100,000 USDT worth of THBT tokens' },
+    ];
+
+
     async function onCheck() {
         const addr = (document.getElementById('addr').value || '').trim().toLowerCase();
         if (!/^0x[a-f0-9]{40}$/i.test(addr)) {
@@ -189,7 +218,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        let eligible = false;
         let prog = { mint100: false, p2p1: false, swap_out10: false, swap_in10: false, storefront1: false };
         if (row) {
             console.log('Found row', row);
@@ -201,20 +229,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 storefront1: truthy(row['To Storefront (Tx)']) && Number(row['To Storefront (Tx)']) >= 1,
                 hasDigipet: truthy(row['Digipet NFT (pcs)']) && Number(row['Digipet NFT (pcs)']) >= 1
             };
-            eligible = prog.mint100 && prog.p2p1 && prog.swap_out10 && prog.swap_in10 && prog.storefront1;
+            
         }
 
-        renderEligibility(eligible, prog);
+        renderEligibility(prog);
     }
 
-    function renderEligibility(eligible, prog) {
+    function renderEligibility(prog) {
         const el = document.getElementById('eligState');
         const note = document.getElementById('eligNote');
         const badge = document.getElementById('digipetBadge');
 
+        const eligible = prog.mint100 && prog.p2p1 && prog.swap_out10 && prog.swap_in10;
+        let reward = 0;
+        if (eligible) reward += 1000; // base
+        if (prog.storefront1) reward += 500; // extra shopper
+        if (prog.hasDigipet) reward += 1000; // extra digipet
+
         el.style.color = eligible ? 'var(--ok)' : 'var(--err)';
-        el.textContent = eligible ? 'Eligible' : 'Not eligible yet';
-        note.textContent = eligible ? 'You have completed all required quests within the activity window.' : 'Complete the remaining quests during the activity window to qualify.';
+        el.textContent = `${reward.toLocaleString()} THBT`;
+        note.textContent = eligible ? 'You have completed all required quests within the activity window.' : 'Complete the remaining quests during the activity window to recieve rewards';
         badge.style.display = prog.hasDigipet ? 'inline-block' : 'none';
 
         const list = document.getElementById('questList');
@@ -225,7 +259,9 @@ document.addEventListener("DOMContentLoaded", function () {
             div.innerHTML = `<div class="ico">${ok ? '✅' : '⛔️'}</div><div><div class="label">${label}</div><div class="small">${desc}</div></div>`;
             return div;
         };
-        QUESTS.concat(EXTRA_QUESTS).forEach(d => list.appendChild(mk(!!prog[d.id], d.label, d.desc)));
+        QUESTS.concat(EXTRA_QUESTS).
+        concat(DIGIPET_QUESTS).
+        forEach(d => list.appendChild(mk(!!prog[d.id], d.label, d.desc)));
     }
 
 
@@ -240,4 +276,5 @@ document.addEventListener("DOMContentLoaded", function () {
         btnR.disabled = true; const old = btnR.textContent; btnR.textContent = 'Loading…';
         loadEligibleUsers().finally(() => { btnR.disabled = false; btnR.textContent = old; });
     });
+
 });

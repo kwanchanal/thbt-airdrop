@@ -27,8 +27,9 @@ a{color:#0b66c3}
 .sub{color:var(--ink-dim)}
 
 /* pills / ribbon */
-.ribbon{margin-top:12px;display:flex;gap:12px;flex-wrap:wrap}
-.pill{flex:1 1 140px;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--accent);color:#0f6f57;border:1px solid #d5f4ec}
+.ribbon{margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;flex-direction:column}
+.pill{flex:1 1;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid #d5f4ec}
+.pill.highlight{background:var(--accent);color:#0f6f57;border:1px solid var(--mint)}
 .k{font-size:12px;color:#7a7a7a}
 .v{font-weight:800}
 

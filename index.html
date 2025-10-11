@@ -15,13 +15,12 @@
   <div class="wrap">
     <section class="hero">
       <div class="brand">
-        <div class="logo"🎈 aria-hidden="true"></div>
+      <div class="logo"aria-hidden="true"></div>
         <div>
           <div class="h1">THBT Airdrop</div>
           <div class="sub">Complete the on‑chain quests. Get rewarded.</div>
         </div>
       </div>
-
       <div class="ribbon" id="ribbon">
         <div class="pill">
           <div>
@@ -29,7 +28,7 @@
             <div class="v" id="activityRange">1 Jul – 30 Oct 2025</div>
           </div>
         </div>
-        <div class="pill">
+        <div class="pill highlight">
           <div>
             <div class="k" id="phaseLabel">Ends In</div>
             <div class="v" id="countdown">—</div>
@@ -44,9 +43,28 @@
       </div>
     </section>
 
+    <!-- Rewards info -->
+    <section class="sec">
+      <h2>Reward</h2>
+      <div class="body grid">
+        <div class="card">
+          <div class="label">🥇 1,000 THBT</div>
+          <div class="small">Airdropped to all eligible wallets who completed quests on <b>1 Nov 2025 • 00:00 (Asia/Bangkok)</b></div>
+        </div>
+        <div class="card">
+          <div class="label">🥈 Extra 500 THBT for Shopper</div>
+          <div class="small">Extra 500 THBT for completed all quests and also <b>purchase ≥ 1 in store </b></div>
+        </div>
+        <div class="card">
+          <div class="label">🥉 Extra 1,000 THBT for DigiPet Owner</div>
+          <div class="small">Extra 1,000 THBT for completed all quests and also hold <b>DigiPet NFT</b></div>
+        </div>
+      </div>
+    </section>
+
     <!-- Check Eligibility -->
     <section class="sec" id="sec-check">
-      <h2>Check eligibility</h2>
+      <h2>Check Reward</h2>
       <div class="body grid">
         <div class="field">
           <input id="addr" type="text" placeholder="Paste your wallet (0x…)" autocomplete="off" spellcheck="false" />
@@ -63,7 +81,7 @@
           <div class="card" id="eligCard">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
               <div>
-                <div class="small">Eligibility</div>
+                <div class="small">You will recieve</div>
                 <div id="eligState" class="label">—</div>
               </div>
               <div id="digipetBadge" class="badge" title="Holds DigiPet NFT on BSC" style="display:none">DigiPet holder
@@ -84,7 +102,7 @@
       </div>
     </section>
 
-        <!-- Extra Quests -->
+    <!-- Extra Quests -->
     <section class="sec">
       <h2>Extra Quests</h2>
       <div class="body grid" id="extraQuestCatalog">
@@ -92,19 +110,11 @@
       </div>
     </section>
 
-    <!-- Rewards info -->
+    <!-- Special For DigiPet Holder -->
     <section class="sec">
-      <h2>Reward</h2>
-      <div class="body grid">
-        <div class="card">
-          <div class="label">🚩 1,000 THBT</div>
-          <div class="small">Airdropped to all eligible wallets on <b>1 Nov 2025 • 00:00 (Asia/Bangkok)</b></div>
-        </div>
-        <div class="card">
-          <div class="label">🚩 2,000 THBT for DigiPet NFT Holders</div>
-          <div class="small">Bonus airdrop for wallets that <b>hold DigiPet NFT on BSC</b> and <b>complete all
-              quests</b></div>
-        </div>
+      <h2>Special For DigiPet Holder</h2>
+      <div class="body grid" id="digipetQuestCatalog">
+        <!-- Populated by JS (static + dynamic when address is checked) -->
       </div>
     </section>
 
