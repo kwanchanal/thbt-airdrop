@@ -61,13 +61,34 @@ document.addEventListener("DOMContentLoaded", function () {
         { id: 'swap_out10', icon: '', label: 'Swap THBT → USDT ≥ 10 THBT', desc: 'Cumulative swap volume out of THBT to USDT ≥ 10.' },
         { id: 'swap_in10', icon: '', label: 'Swap USDT → THBT ≥ 10 THBT', desc: 'Cumulative swap volume into THBT from USDT ≥ 10.' },
         { id: 'storefront1', icon: '', label: 'Purchase coupon ≥ 1 tx', desc: 'At least one storefront purchase.' },
-        { id: 'hasDigipet', icon: '🐶', label: 'Digipet NFT holder', desc: 'Special for Digipet NFT holder' }
     ];
 
     function renderQuestCatalog() {
         const cont = qs('#questCatalog');
         cont.innerHTML = '';
         for (const q of QUESTS) {
+            const el = document.createElement('div');
+            el.className = 'task';
+            el.innerHTML = `
+        <div class="ico">${q.icon ? q.icon : '🔒'}</div>
+        <div>
+          <div class="label">${q.label}</div>
+          <div class="small">${q.desc}</div>
+        </div>`;
+            cont.appendChild(el);
+        }
+    }
+    renderQuestCatalog();
+
+        // Render static quest catalog (descriptions)
+    const EXTRA_QUESTS = [
+        { id: 'hasDigipet', icon: '🐶', label: 'Digipet NFT holder', desc: 'Special for Digipet NFT holder' }
+    ];
+
+    function renderExtraQuestCatalog() {
+        const cont = qs('#extraQuestCatalog');
+        cont.innerHTML = '';
+        for (const q of EXTRA_QUESTS) {
             const el = document.createElement('div');
             el.className = 'task';
             el.innerHTML = `
@@ -79,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
             cont.appendChild(el);
         }
     }
-    renderQuestCatalog();
+    renderExtraQuestCatalog();
 
     // ====== Dune fetch & Eligible list ======
 
@@ -204,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
             div.innerHTML = `<div class="ico">${ok ? '✅' : '⛔️'}</div><div><div class="label">${label}</div><div class="small">${desc}</div></div>`;
             return div;
         };
-        QUESTS.forEach(d => list.appendChild(mk(!!prog[d.id], d.label, d.desc)));
+        QUESTS.concat(EXTRA_QUESTS).forEach(d => list.appendChild(mk(!!prog[d.id], d.label, d.desc)));
     }
 
 
